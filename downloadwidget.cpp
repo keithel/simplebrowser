@@ -52,7 +52,12 @@
 
 #include <QFileInfo>
 #include <QUrl>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QWebEngineDownloadRequest>
+#else
+#include <QWebEngineDownloadItem>
+#define QWebEngineDownloadRequest QWebEngineDownloadItem
+#endif
 
 DownloadWidget::DownloadWidget(QWebEngineDownloadRequest *download, QWidget *parent)
     : QFrame(parent)
@@ -72,8 +77,15 @@ DownloadWidget::DownloadWidget(QWebEngineDownloadRequest *download, QWidget *par
             emit removeClicked(this);
     });
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(m_download, &QWebEngineDownloadRequest::totalBytesChanged, this, &DownloadWidget::updateWidget);
     connect(m_download, &QWebEngineDownloadRequest::receivedBytesChanged, this, &DownloadWidget::updateWidget);
+#else
+    connect(m_download, &QWebEngineDownloadRequest::downloadProgress, this,
+        [this](qint64 bytesReceived, qint64 bytesTotal) {
+            updateWidget();
+        });
+#endif
 
     connect(m_download, &QWebEngineDownloadRequest::stateChanged,
             this, &DownloadWidget::updateWidget);

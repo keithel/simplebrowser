@@ -13,11 +13,12 @@ endif()
 
 set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/webenginewidgets/simplebrowser")
 
-find_package(Qt6 COMPONENTS Core)
-find_package(Qt6 COMPONENTS Gui)
-find_package(Qt6 COMPONENTS WebEngineWidgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS WebEngineWidgets)
 
-qt_add_executable(simplebrowser
+set(PROJECT_SOURCES
     browser.cpp browser.h
     browserwindow.cpp browserwindow.h
     certificateerrordialog.ui
@@ -30,6 +31,19 @@ qt_add_executable(simplebrowser
     webpopupwindow.cpp webpopupwindow.h
     webview.cpp webview.h
 )
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(simplebrowser
+        ${PROJECT_SOURCES}
+    )
+else()
+    add_executable(simplebrowser
+        ${PROJECT_SOURCES}
+        qrc_simplebrowser.cpp
+        qrc_simplebrowser1.cpp
+        simplebrowser.qrc
+        simplebrowser1.qrc
+    )
+endif()
 set_target_properties(simplebrowser PROPERTIES
     WIN32_EXECUTABLE TRUE
     MACOSX_BUNDLE TRUE
@@ -47,14 +61,6 @@ set(simplebrowser_resource_files
     "data/ninja.png"
 )
 
-qt_add_resources(simplebrowser "simplebrowser"
-    PREFIX
-        "/"
-    BASE
-        "data"
-    FILES
-        ${simplebrowser_resource_files}
-)
 set(simplebrowser1_resource_files
     "data/3rdparty/dialog-error.png"
     "data/3rdparty/edit-clear.png"
@@ -66,14 +72,37 @@ set(simplebrowser1_resource_files
     "data/3rdparty/view-refresh.png"
 )
 
-qt_add_resources(simplebrowser "simplebrowser1"
-    PREFIX
-        "/"
-    BASE
-        "data/3rdparty"
-    FILES
-        ${simplebrowser1_resource_files}
-)
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_resources(simplebrowser "simplebrowser"
+        PREFIX
+            "/"
+        BASE
+            "data"
+        FILES
+            ${simplebrowser_resource_files}
+    )
+
+    qt_add_resources(simplebrowser "simplebrowser1"
+        PREFIX
+            "/"
+        BASE
+            "data/3rdparty"
+        FILES
+            ${simplebrowser1_resource_files}
+    )
+else()
+    qt_add_resources(simplebrowser "simplebrowser"
+        FILES
+            simplebrowser.qrc
+            ${simplebrowser_resource_files}
+    )
+
+    qt_add_resources(simplebrowser "simplebrowser1"
+        FILES
+            simplebrowser1.qrc
+            ${simplebrowser1_resource_files}
+    )
+endif()
 
 install(TARGETS simplebrowser
     RUNTIME DESTINATION "${INSTALL_EXAMPLEDIR}"

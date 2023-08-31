@@ -55,6 +55,10 @@
 
 #include <QWidget>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#define QWebEngineDownloadRequest QWebEngineDownloadItem
+#endif
+
 QT_BEGIN_NAMESPACE
 class QWebEngineDownloadRequest;
 QT_END_NAMESPACE

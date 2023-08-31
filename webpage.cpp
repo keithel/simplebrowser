@@ -59,7 +59,9 @@ WebPage::WebPage(QWebEngineProfile *profile, QObject *parent)
     : QWebEnginePage(profile, parent)
 {
     connect(this, &QWebEnginePage::selectClientCertificate, this, &WebPage::handleSelectClientCertificate);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     connect(this, &QWebEnginePage::certificateError, this, &WebPage::handleCertificateError);
+#endif
 }
 
 void WebPage::handleCertificateError(QWebEngineCertificateError error)

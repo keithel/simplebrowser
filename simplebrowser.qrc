@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="AppLogoColor.png">data/AppLogoColor.png</file>
+        <file alias="ninja.png">data/ninja.png</file>
+    </qresource>
+</RCC>

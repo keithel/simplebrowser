@@ -63,6 +63,7 @@
 #include <QAuthenticator>
 #include <QTimer>
 #include <QStyle>
+#include <QMessageBox>
 
 WebView::WebView(QWidget *parent)
     : QWebEngineView(parent)
@@ -224,6 +225,7 @@ QWebEngineView *WebView::createWindow(QWebEnginePage::WebWindowType type)
 
 void WebView::contextMenuEvent(QContextMenuEvent *event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
     QMenu *menu = createStandardContextMenu();
     const QList<QAction *> actions = menu->actions();
     auto inspectElement = std::find(actions.cbegin(), actions.cend(), page()->action(QWebEnginePage::InspectElement));
@@ -242,10 +244,12 @@ void WebView::contextMenuEvent(QContextMenuEvent *event)
         (*inspectElement)->setText(tr("Inspect element"));
     }
     menu->popup(event->globalPos());
+#endif
 }
 
 void WebView::handleCertificateError(QWebEngineCertificateError error)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
     QDialog dialog(window());
     dialog.setModal(true);
     dialog.setWindowFlags(dialog.windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -262,6 +266,9 @@ void WebView::handleCertificateError(QWebEngineCertificateError error)
         error.acceptCertificate();
     else
         error.rejectCertificate();
+#else
+    QMessageBox::critical(this, "Certificate Error", "There was an error with the certificate");
+#endif
 }
 
 void WebView::handleAuthenticationRequired(const QUrl &requestUrl, QAuthenticator *auth)

@@ -53,6 +53,20 @@
 
 #include <QWebEngineSettings>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+QString qWebEngineChromiumVersion()
+{
+    QString version;
+    QString user_agent = QWebEngineProfile::defaultProfile()->httpUserAgent();
+    for(const QString & text : user_agent.split(" ")){
+        if(text.startsWith(QStringLiteral("Chrome/"))){
+            version = text.mid(QStringLiteral("Chrome/").length());
+        }
+    }
+    return version;
+}
+#endif
+
 Browser::Browser()
 {
     // Quit application if the download manager window is the only remaining window

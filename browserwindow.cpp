@@ -341,7 +341,11 @@ QToolBar *BrowserWindow::createToolBar()
     QList<QKeySequence> backShortcuts = QKeySequence::keyBindings(QKeySequence::Back);
     for (auto it = backShortcuts.begin(); it != backShortcuts.end();) {
         // Chromium already handles navigate on backspace when appropriate.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         if ((*it)[0].key() == Qt::Key_Backspace)
+#else
+        if ((*it)[0] == Qt::Key_Backspace)
+#endif
             it = backShortcuts.erase(it);
         else
             ++it;
@@ -360,7 +364,11 @@ QToolBar *BrowserWindow::createToolBar()
     m_historyForwardAction = new QAction(this);
     QList<QKeySequence> fwdShortcuts = QKeySequence::keyBindings(QKeySequence::Forward);
     for (auto it = fwdShortcuts.begin(); it != fwdShortcuts.end();) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         if (((*it)[0].key() & Qt::Key_unknown) == Qt::Key_Backspace)
+#else
+        if (((*it)[0] & Qt::Key_unknown) == Qt::Key_Backspace)
+#endif
             it = fwdShortcuts.erase(it);
         else
             ++it;

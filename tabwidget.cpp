@@ -82,7 +82,8 @@ TabWidget::TabWidget(QWebEngineProfile *profile, QWidget *parent)
         QPixmap pixmap(QStringLiteral(":ninja.png"));
         icon->setPixmap(pixmap.scaledToHeight(tabBar->height()));
         setStyleSheet(QStringLiteral("QTabWidget::tab-bar { left: %1px; }").
-                      arg(icon->pixmap().width()));
+                      arg(icon->pixmap(Qt::ReturnByValue
+                         ).width()));
     }
 }
 
